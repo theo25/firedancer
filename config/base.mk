@@ -1,11 +1,11 @@
 SHELL:=bash
 CPPFLAGS:=-isystem ./opt/include
-CC:=gcc
+CC:=/home/theo/builds/gcc/inst-12.2.0/bin/gcc
 CFLAGS:=-std=c17
-CXX:=g++
+CXX:=/home/theo/builds/gcc/inst-12.2.0/bin/g++
 CXXFLAGS:=-std=c++17
-LD:=g++
-LDFLAGS:=-lm
+LD:=/home/theo/builds/gcc/inst-12.2.0/bin/g++
+LDFLAGS:=-lm -lubsan -L/home/theo/builds/gcc/inst-12.2.0/lib64 -Wl,-rpath -Wl,/home/theo/builds/gcc/inst-12.2.0/lib64
 AR:=ar
 ARFLAGS:=rv
 RANLIB:=ranlib
