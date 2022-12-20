@@ -1,11 +1,11 @@
 SHELL:=/bin/bash
 CPPFLAGS:=
-CC:=gcc
-CFLAGS:=-std=c17
-CXX:=g++
-CXXFLAGS:=-std=c++17
-LD:=g++
-LDFLAGS:=-lm
+CC:=/home/theo/builds/gcc/inst-12.2.0/bin/gcc
+CFLAGS:=-std=c17 -fprofile-arcs -ftest-coverage
+CXX:=/home/theo/builds/gcc/inst-12.2.0/bin/g++
+CXXFLAGS:=-std=c++17 -fprofile-arcs -ftest-coverage
+LD:=/home/theo/builds/gcc/inst-12.2.0/bin/g++
+LDFLAGS:=-lm -L/home/theo/builds/gcc/inst-12.2.0/lib64 -Wl,-rpath -Wl,/home/theo/builds/gcc/inst-12.2.0/lib64 -lgcov --coverage
 AR:=ar
 ARFLAGS:=rv
 RANLIB:=ranlib
