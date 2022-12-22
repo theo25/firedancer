@@ -311,6 +311,12 @@ def main(arguments):
         choices=all_unit_tests,
         default=list(all_unit_tests))
     parser.add_argument(
+        '--except-tests',
+        help="Unit tests to skip, defaults to no test",
+        nargs='*',
+        choices=all_unit_tests,
+        default=list())
+    parser.add_argument(
         '--no-numa-warning',
         help="Silence the numa warning",
         action='store_true')
@@ -333,12 +339,14 @@ def main(arguments):
 
     output_dir = args.output_directory.resolve()
 
+    tests_to_run = set(args.tests).difference(set(args.except_tests))
+
     if not args.no_numa_warning:
-        if any(test in numa_tests for test in args.tests):
+        if any(test in numa_tests for test in tests_to_run):
             print(numa_warning)
 
     pcap_file = None
-    if 'test_pcap' in args.tests or 'test_replay' in args.tests:
+    if 'test_pcap' in tests_to_run or 'test_replay' in tests_to_run:
         if not args.pcap:
             sys.exit('No pcap file provided for tests test_pcap and/or test_replay, use flag --pcap to provide one!')
         if not args.pcap.exists():
@@ -347,7 +355,7 @@ def main(arguments):
             sys.exit(f"Provided path to pcap file \'{args.pcap}\' doesn't point to a file!")
         pcap_file = args.pcap.resolve()
 
-    for test in args.tests:
+    for test in tests_to_run:
         if test == 'test_ipc':
             run_ipc_test(build_dir, output_dir)
             continue
