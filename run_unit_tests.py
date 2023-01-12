@@ -13,6 +13,8 @@ no_input_tests = {
     'test_compact_u16',
     'test_cstr',
     'test_dcache',
+    'test_deque',
+    'test_deque_dynamic',
     'test_disco_base',
     'test_ed25519',
     'test_env',
@@ -29,27 +31,35 @@ no_input_tests = {
     'test_map_dynamic',
     'test_mcache',
     'test_pod',
+    'test_pod_ctl',
+    'test_poh',
     'test_prq',
+    'test_queue',
+    'test_queue_dynamic',
     'test_rng',
     'test_scratch',
     'test_set',
     'test_set_dynamic',
+    'test_sha256',
     'test_sha512',
+    'test_shmem_ctl',
     'test_shred',
     'test_smallset',
     'test_sort',
     'test_sqrt',
     'test_sse',
+    'test_stack',
     'test_stat',
     'test_tango_base',
+    'test_tango_ctl',
     'test_tempo',
-    'test_txn',
     'test_txn',
     'test_txn_parse',
     'test_udp',
     'test_util',
     'test_util_base',
-    'test_uwide'
+    'test_uwide',
+    'test_wksp_ctl'
 }
 
 numa_tests = {
@@ -83,9 +93,7 @@ $ sudo bash <fd build dir>/bin/fd_shmem_cfg fini
 $ sudo bash <fd build dir>/bin/fd_shmem_cfg free huge 0
 $ sudo bash <fd build dir>/bin/fd_shmem_cfg free gigantic 0\n"""
 
-pass_pattern = re.compile(r'NOTICE .*: pass$')
-
-script_pass_pattern = re.compile(r'pass$')
+pass_pattern = re.compile(r'.*pass$')
 
 
 def run_test(test, test_command, output_dir, time_out=360):
@@ -97,7 +105,7 @@ def run_test(test, test_command, output_dir, time_out=360):
                 test_command + ['--log-path', log_file],
                 timeout=time_out,
                 check=True,
-                stdout=subprocess.DEVNULL,
+                stdout=err_fd,
                 stderr=err_fd)
     except subprocess.TimeoutExpired as to:
         sys.exit(f"Test {test} timed out after {to.timeout} seconds!")
