@@ -123,6 +123,15 @@ fd_ed25519_fe_isnonzero( fd_ed25519_fe_t const * f ) {
 }
 
 static inline int
+fd_ed25519_fe_isequal( fd_ed25519_fe_t const * f1, fd_ed25519_fe_t const * f2 ) {
+  uchar s1[32] __attribute((aligned(32))); fd_ed25519_fe_tobytes( s1, f1 );
+  uchar s2[32] __attribute((aligned(32))); fd_ed25519_fe_tobytes( s2, f2 );
+  wi_t s07_1 = wi_ld( (int const *)s1 );
+  wi_t s07_2 = wi_ld( (int const *)s2 );
+  return wc_all( wi_eq( s07_1, s07_2 ) );
+}
+
+static inline int
 fd_ed25519_fe_isnegative( fd_ed25519_fe_t const * f ) {
   uchar s[32]; fd_ed25519_fe_tobytes( s, f );
   return ((int)(uint)s[0]) & 1;

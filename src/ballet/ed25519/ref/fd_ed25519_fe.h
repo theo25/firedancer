@@ -241,6 +241,13 @@ fd_ed25519_fe_isnonzero( fd_ed25519_fe_t const * f ) {
   return !!memcmp( s, zero, 32UL );
 }
 
+static inline int
+fd_ed25519_fe_isequal( fd_ed25519_fe_t const * f1, fd_ed25519_fe_t const * f2 ) {
+  uchar s1[32]; fd_ed25519_fe_tobytes( s1, f1 );
+  uchar s2[32]; fd_ed25519_fe_tobytes( s2, f2 );
+  return !memcmp( s1, s2, 32UL );
+}
+
 /* fd_ed25519_fe_isnegative returns 1 if f is in {1,3,5,...,q-2} and 0
    otherwise.
 

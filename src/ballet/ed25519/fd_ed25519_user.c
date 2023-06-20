@@ -423,6 +423,8 @@ fd_ed25519_verify( void const *  msg,
                       &y_Z, R->Z, rD->Y );
   return (memcmp( &x_Z, R->X, 32UL ) |
           memcmp( &y_Z, R->Y, 32UL ) ) ? FD_ED25519_ERR_MSG : FD_ED25519_SUCCESS;
+  //return (fd_ed25519_fe_isequal( &x_Z, R->X ) &
+  //        fd_ed25519_fe_isequal( &y_Z, R->Y ) ) ? FD_ED25519_SUCCESS : FD_ED25519_ERR_MSG;
 # else
   uchar rcheck[ 32 ];
   fd_ed25519_ge_tobytes( rcheck, R );

@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <assert.h>
+
 #include "../fd_ballet.h"
 #include "fd_ed25519_private.h"
 
@@ -778,6 +781,65 @@ test_verify( fd_rng_t *    rng,
   }
 }
 
+static void
+test_verify_noncanonical( fd_sha512_t * sha ) {
+  uchar _msg[ 150 ] = { 0x01U, 0x00U, 0x01U, 0x03U, 0x82U, 0x68U, 0xf1U, 0xa9U,
+                        0xdbU, 0x24U, 0x3eU, 0x21U, 0x14U, 0x68U, 0x57U, 0xf5U,
+                        0x95U, 0xc0U, 0x8cU, 0xf1U, 0x8fU, 0x4bU, 0x85U, 0xe8U,
+                        0xb2U, 0x62U, 0xe8U, 0x00U, 0xb7U, 0x21U, 0x9fU, 0x45U,
+                        0x68U, 0xe3U, 0x02U, 0x0dU, 0x16U, 0x24U, 0x6aU, 0xb0U,
+                        0x93U, 0x0eU, 0xa6U, 0x36U, 0x26U, 0x13U, 0xa4U, 0x2eU,
+                        0x94U, 0xf1U, 0x81U, 0xa2U, 0x6aU, 0xa5U, 0x40U, 0x29U,
+                        0xc6U, 0xd6U, 0xf4U, 0xffU, 0xf5U, 0xabU, 0x39U, 0xd4U,
+                        0x7dU, 0x7bU, 0xeeU, 0xedU, 0x00U, 0x00U, 0x00U, 0x00U,
+                        0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
+                        0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
+                        0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
+                        0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
+                        0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
+                        0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
+                        0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
+                        0x00U, 0x00U, 0x00U, 0x00U, 0x01U, 0x02U, 0x02U, 0x00U,
+                        0x01U, 0x0cU, 0x02U, 0x00U, 0x00U, 0x00U, 0x06U, 0xd1U,
+                        0x5bU, 0x7cU, 0xbeU, 0x36U, 0x4cU, 0x6cU }; uchar * msg = _msg;
+  //uchar _msg[  5 ] = { 'Z', 'c', 'a', 's', 'h' }; uchar * msg = _msg;
+  uchar _pub[ 32 ]; uchar * pub = _pub;
+  uchar _sig[ 64 ]; uchar * sig = _sig;
+  int lineno = 0;
+
+  FILE *fd = fopen("NONCANONICAL2", "r");
+  while (!feof(fd)) {
+    int c;
+
+    ++lineno;
+    for (int i = 0; i < 32; ++i) {
+      c = fscanf(fd, "%2hhx", pub + i);
+      assert(c == 1);
+    }
+    c = fscanf(fd, ":");
+    assert(c == 0);
+    for (int i = 0; i < 64; ++i) {
+      c = fscanf(fd, "%2hhx", sig + i);
+      assert(c == 1);
+    }
+    c = fscanf(fd, ":\n");
+    assert(c == 0);
+    //printf("pub = ");
+    //for (int i = 0; i < 32; ++i) {
+    //  printf("%.2hhx", pub[i]);
+    //}
+    //printf(", sig = ");
+    //for (int i = 0; i < 64; ++i) {
+    //  printf("%.2hhx", sig[i]);
+    //}
+    //printf("\n");
+    int result = fd_ed25519_verify( msg, 150, sig, pub, sha );
+    printf("signature at line %d validation result: %s\n", lineno, result?"false":"true");
+  }
+  fclose(fd);
+
+}
+
 /**********************************************************************/
 
 int
@@ -810,6 +872,7 @@ main( int     argc,
   test_public_from_private( rng, sha );
   test_sign               ( rng, sha );
   test_verify             ( rng, sha );
+  test_verify_noncanonical( sha );
 
   fd_sha512_delete( fd_sha512_leave( sha ) );
   fd_rng_delete( fd_rng_leave( rng ) );
